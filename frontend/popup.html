@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>X Feed Simulator</title>
+    <link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+    <h1>X Feed Simulator</h1>
+
+    <div>
+        <h2>Add New Account</h2>
+        <label for="accountName">Account Name:</label>
+        <input type="text" id="accountName" placeholder="e.g., Friend's X">
+
+        <label for="authToken">Auth Token (auth_token):</label>
+        <input type="text" id="authToken" placeholder="Enter auth_token">
+
+        <label for="ct0Token">CT0 Token (ct0):</label>
+        <input type="text" id="ct0Token" placeholder="Enter ct0 token">
+
+        <button id="saveAccountButton">Save Account</button>
+    </div>
+
+    <div>
+        <h2>Saved Accounts</h2>
+        <div id="account-list">
+        </div>
+    </div>
+
+    <script src="popup.js"></script>
+</body>
+</html>
