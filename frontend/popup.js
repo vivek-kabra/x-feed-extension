@@ -1,3 +1,35 @@
+// Defining Mock Data (as if it came from the backend)
+const MOCK_TWEET_DATA = [
+    {
+        id: "mock_tweet_001",
+        text: "Hello world! This is my first mock tweet for the X Feed Simulator. #FrontendFun",
+        author_name: "Mocking Bird",
+        author_handle: "@mockUserDev",
+        author_avatar: "https://via.placeholder.com/48/007bff/ffffff?Text=MB" // Blue placeholder
+    },
+    {
+        id: "mock_tweet_002",
+        text: "Just enjoying a lovely day coding. This extension is going to be awesome! 🎉💻",
+        author_name: "Dev Enthusiast",
+        author_handle: "@codeLover23",
+        author_avatar: "https://via.placeholder.com/48/28a745/ffffff?Text=DE" // Green placeholder
+    },
+    {
+        id: "mock_tweet_003",
+        text: "A slightly longer mock tweet to see how the text rendering will behave. We need to ensure that long strings of text wrap correctly and do not break the layout of our beautifully crafted custom tweet elements. Hopefully, this is long enough!",
+        author_name: "Ms. Verbose",
+        author_handle: "@talksalot",
+        author_avatar: "https://via.placeholder.com/48/ffc107/000000?Text=MV" // Yellow placeholder with black text
+    },
+    {
+        id: "mock_tweet_004",
+        text: "Short and sweet.",
+        author_name: "Concise Coder",
+        author_handle: "@briefBits",
+        author_avatar: "https://via.placeholder.com/48/6f42c1/ffffff?Text=CC" // Purple placeholder
+    }
+];
+
 document.addEventListener('DOMContentLoaded', function() {
     console.log("Popup DOM fully loaded and parsed");
 
@@ -12,7 +44,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Calling displayAccounts when the popup is loaded to show any existing accounts
     displayAccounts();
 
-    // Function to save a new account
+    // Function to save a new account 
     function saveAccount() {
         console.log("Save Account button clicked");
 
@@ -97,6 +129,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 viewButton.textContent = 'View';
                 viewButton.className = 'view-button';
                 viewButton.dataset.accountId = account.id; 
+                viewButton.addEventListener('click', handleViewAccount); 
 
                 const deleteButton = document.createElement('button');
                 deleteButton.textContent = 'Delete';
@@ -114,7 +147,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Function to handle account deletion 
+    // Function to handle account deletion
     function handleDeleteAccount(event) {
         const accountIdToDelete = event.target.dataset.accountId;
         console.log("Attempting to delete account with ID:", accountIdToDelete);
@@ -143,6 +176,34 @@ document.addEventListener('DOMContentLoaded', function() {
                     displayAccounts();
                 }
             });
+        });
+    }
+
+    // Function to handle viewing an account's feed (MOCKED)
+    function handleViewAccount(event) {
+        const accountIdToView = event.target.dataset.accountId;
+        console.log("View button clicked for account ID (MOCK MODE):", accountIdToView);
+
+        if (!accountIdToView) {
+            console.error("No account ID found on view button (MOCK MODE).");
+            alert("Error: Could not identify the account to view.");
+            return;
+        }
+
+        chrome.storage.local.get({ accounts: [] }, function(storageData) {
+            const accountToView = storageData.accounts.find(acc => acc.id === accountIdToView);
+            const accountDisplayName = accountToView ? accountToView.name : `(Unknown/Mocked Account: ${accountIdToView})`;
+
+            console.log(`Simulating feed view for account: ${accountDisplayName}.`);
+
+            // --- MOCKING THE "FETCH" RESPONSE ---
+            // Instead of an actual fetch call to a backend:
+            const responseData = MOCK_TWEET_DATA; 
+            // In a real scenario, this would be: const responseData = await response.json();
+
+            console.log('Mock backend call successful. "Received" data:', responseData);
+            alert('Displaying MOCKED feed data! Check the popup\'s console for the data structure.'); 
+            
         });
     }
 });
