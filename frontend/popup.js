@@ -5,28 +5,28 @@ const MOCK_TWEET_DATA = [
         text: "Hello world! This is my first mock tweet for the X Feed Simulator. #FrontendFun",
         author_name: "Mocking Bird",
         author_handle: "@mockUserDev",
-        author_avatar: "https://via.placeholder.com/48/007bff/ffffff?Text=MB" // Blue placeholder
+        author_avatar: "https://placehold.co/48x48/007bff/ffffff/png?text=MB" // CHANGED to placehold.co
     },
     {
         id: "mock_tweet_002",
         text: "Just enjoying a lovely day coding. This extension is going to be awesome! 🎉💻",
         author_name: "Dev Enthusiast",
         author_handle: "@codeLover23",
-        author_avatar: "https://via.placeholder.com/48/28a745/ffffff?Text=DE" // Green placeholder
+        author_avatar: "https://placehold.co/48x48/28a745/ffffff/png?text=DE" // CHANGED to placehold.co
     },
     {
         id: "mock_tweet_003",
         text: "A slightly longer mock tweet to see how the text rendering will behave. We need to ensure that long strings of text wrap correctly and do not break the layout of our beautifully crafted custom tweet elements. Hopefully, this is long enough!",
         author_name: "Ms. Verbose",
         author_handle: "@talksalot",
-        author_avatar: "https://via.placeholder.com/48/ffc107/000000?Text=MV" // Yellow placeholder with black text
+        author_avatar: "https://placehold.co/48x48/ffc107/000000/png?text=MV" // CHANGED to placehold.co
     },
     {
         id: "mock_tweet_004",
         text: "Short and sweet.",
         author_name: "Concise Coder",
         author_handle: "@briefBits",
-        author_avatar: "https://via.placeholder.com/48/6f42c1/ffffff?Text=CC" // Purple placeholder
+        author_avatar: "https://placehold.co/48x48/6f42c1/ffffff/png?text=CC" // CHANGED to placehold.co
     }
 ];
 
