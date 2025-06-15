@@ -44,7 +44,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Calling displayAccounts when the popup is loaded to show any existing accounts
     displayAccounts();
 
-    // Function to save a new account 
+    // --- Function to save a new account ---
     function saveAccount() {
         console.log("Save Account button clicked");
 
@@ -63,8 +63,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
         const newAccount = {
             name: accountName,
-            auth_token: authToken, 
-            ct0: ct0Token,         
+            auth_token: authToken,
+            ct0: ct0Token,
             id: `acc_${Date.now()}`
         };
 
@@ -94,7 +94,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Function to display saved accounts
+    // --- Function to display saved accounts ---
     function displayAccounts() {
         console.log("Attempting to display accounts");
         const accountListDiv = document.getElementById('account-list');
@@ -115,26 +115,26 @@ document.addEventListener('DOMContentLoaded', function() {
             }
 
             const ul = document.createElement('ul');
-            ul.className = 'accounts-ul'; 
+            ul.className = 'accounts-ul';
 
             accounts.forEach(account => {
                 const li = document.createElement('li');
                 li.className = 'account-item';
-                
+
                 const accountNameSpan = document.createElement('span');
                 accountNameSpan.className = 'account-name';
                 accountNameSpan.textContent = account.name;
-                
+
                 const viewButton = document.createElement('button');
                 viewButton.textContent = 'View';
                 viewButton.className = 'view-button';
-                viewButton.dataset.accountId = account.id; 
+                viewButton.dataset.accountId = account.id;
                 viewButton.addEventListener('click', handleViewAccount); 
 
                 const deleteButton = document.createElement('button');
                 deleteButton.textContent = 'Delete';
                 deleteButton.className = 'delete-button';
-                deleteButton.dataset.accountId = account.id; 
+                deleteButton.dataset.accountId = account.id;
                 deleteButton.addEventListener('click', handleDeleteAccount);
 
                 li.appendChild(accountNameSpan);
@@ -142,12 +142,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 li.appendChild(deleteButton);
                 ul.appendChild(li);
             });
-
             accountListDiv.appendChild(ul);
         });
     }
 
-    // Function to handle account deletion
+    // --- Function to handle account deletion ---
     function handleDeleteAccount(event) {
         const accountIdToDelete = event.target.dataset.accountId;
         console.log("Attempting to delete account with ID:", accountIdToDelete);
@@ -158,12 +157,11 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         if (!confirm("Are you sure you want to delete this account?")) {
-            return; 
+            return;
         }
 
         chrome.storage.local.get({ accounts: [] }, function(data) {
             let accounts = data.accounts;
-            
             const updatedAccounts = accounts.filter(account => account.id !== accountIdToDelete);
 
             chrome.storage.local.set({ accounts: updatedAccounts }, function() {
@@ -179,7 +177,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Function to handle viewing an account's feed (MOCKED)
+    // --- Function to handle viewing an account's feed (MOCKED) ---
     function handleViewAccount(event) {
         const accountIdToView = event.target.dataset.accountId;
         console.log("View button clicked for account ID (MOCK MODE):", accountIdToView);
@@ -196,14 +194,46 @@ document.addEventListener('DOMContentLoaded', function() {
 
             console.log(`Simulating feed view for account: ${accountDisplayName}.`);
 
-            // --- MOCKING THE "FETCH" RESPONSE ---
-            // Instead of an actual fetch call to a backend:
-            const responseData = MOCK_TWEET_DATA; 
-            // In a real scenario, this would be: const responseData = await response.json();
+            const responseData = MOCK_TWEET_DATA; // Our mock data
 
-            console.log('Mock backend call successful. "Received" data:', responseData);
-            alert('Displaying MOCKED feed data! Check the popup\'s console for the data structure.'); 
-            
+            console.log('Mock backend call successful. "Received" data (in popup):', responseData);
+
+            if (responseData && responseData.length > 0) {
+                chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
+                    const activeTab = tabs[0];
+                    if (activeTab && activeTab.id) {
+                        chrome.scripting.executeScript({
+                            target: { tabId: activeTab.id },
+                            files: ['content.js']
+                        }, () => {
+                            if (chrome.runtime.lastError) {
+                                console.error('popup.js: Error injecting content script:', chrome.runtime.lastError.message);
+                                alert('Error injecting script. Check console. Is the page protected (e.g. chrome:// pages)? Are you on x.com?');
+                                return;
+                            }
+                            console.log("popup.js: Content script presumed injected/already present. Sending message...");
+                            chrome.tabs.sendMessage(activeTab.id, {
+                                action: "displayFeed",
+                                data: responseData
+                            }, (responseFromContentScript) => {
+                                if (chrome.runtime.lastError) {
+                                    console.error("popup.js: Error sending message to content script:", chrome.runtime.lastError.message);
+                                } else if (responseFromContentScript) {
+                                    console.log("popup.js: Response from content script:", responseFromContentScript);
+                                } else {
+                                    console.log("popup.js: Message sent to content script, no specific response received (which can be normal).");
+                                }
+                            });
+                        });
+                    } else {
+                        console.error("popup.js: Could not get active tab ID to inject script.");
+                        alert("Error: Could not identify active tab.");
+                    }
+                });
+            } else {
+                console.error("popup.js: No MOCK_TWEET_DATA to send to content script.");
+                alert("No data available to display.");
+            }
         });
     }
 });
