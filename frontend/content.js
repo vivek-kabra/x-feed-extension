@@ -2,8 +2,8 @@ console.log("X Feed Simulator: content.js loaded and waiting for data...");
 
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
     if (request.action === "displayFeed") {
-        console.log("X Feed Simulator: content.js received data (for displayFeed action):", request.data);
-        renderCustomFeed(request.data); // Calling the function to render the feed
+        console.log(`X Feed Simulator: content.js received action 'displayFeed' for feedType: '${request.feedType}'. Data:`, request.data);
+        renderCustomFeed(request.data, request.feedType); 
 
         sendResponse({ 
             status: "success", 
@@ -13,36 +13,54 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
     return true; 
 });
 
-function renderCustomFeed(tweets) {
-    console.log("X Feed Simulator: Rendering custom feed with tweets:", tweets);
+function renderCustomFeed(tweets, feedType) {
+    console.log(`X Feed Simulator: Rendering custom '${feedType}' feed with tweets:`, tweets);
 
-    // 1. Finding the main timeline element on the X.com page.
     const timelineSelector = '[aria-label="Timeline: Your Home Timeline"]'; 
     let timelineElement = document.querySelector(timelineSelector);
 
     if (!timelineElement) {
-        console.warn(`X Feed Simulator: Primary timeline selector "${timelineSelector}" not found. Trying a more general approach for the timeline container.`);
-        const potentialTimelines = document.querySelectorAll('div[data-testid="primaryColumn"] div[aria-label]');
-        potentialTimelines.forEach(el => {
-            if (el.innerHTML.includes('tweet')) { 
-            }
-        });
-         if (!timelineElement) { 
+        console.warn(`X Feed Simulator: Primary timeline selector "${timelineSelector}" not found. Attempting fallback (less reliable).`);
+        const primaryColumn = document.querySelector('div[data-testid="primaryColumn"]');
+        if (primaryColumn) {
+            timelineElement = primaryColumn.querySelector('section > div > div'); 
+        }
+
+        if (!timelineElement) { 
             console.error("X Feed Simulator: Could not find the main timeline element on the page. Cannot render custom feed.");
-            alert("X Feed Simulator: Could not find the Twitter timeline element to replace. Injection might have failed or page structure changed.");
+            alert("X Feed Simulator: Could not find the Twitter timeline element to replace.");
             return;
          }
     }
     
     console.log("X Feed Simulator: Found timeline element:", timelineElement);
 
-    timelineElement.innerHTML = '';
+    timelineElement.innerHTML = ''; 
     console.log("X Feed Simulator: Cleared existing timeline content.");
 
+    // Adding "Switch back to my feed" button
+    const switchBackButton = document.createElement('button');
+    switchBackButton.textContent = 'Switch back to my original X feed';
+    switchBackButton.style.display = 'block';
+    switchBackButton.style.margin = '10px auto 20px auto';
+    switchBackButton.style.padding = '10px 15px';
+    switchBackButton.style.backgroundColor = '#1DA1F2'; // Twitter blue
+    switchBackButton.style.color = 'white';
+    switchBackButton.style.border = 'none';
+    switchBackButton.style.borderRadius = '20px'; // Pill shape
+    switchBackButton.style.cursor = 'pointer';
+    switchBackButton.style.fontSize = '15px';
+    switchBackButton.style.fontWeight = 'bold';
+    switchBackButton.onclick = function() {
+        location.reload(); // Simple page reload
+    };
+    timelineElement.appendChild(switchBackButton);
+
+    // Adding a heading to indicate it's a simulated feed, including the feedType
     const feedHeader = document.createElement('h2');
-    feedHeader.textContent = "Simulated X Feed (via Extension)";
+    feedHeader.textContent = `Simulated X Feed (${feedType || 'Following'} - via Extension)`; 
     feedHeader.style.textAlign = "center";
-    feedHeader.style.padding = "20px";
+    feedHeader.style.padding = "0px 0px 20px 0px"; 
     feedHeader.style.color = "#1DA1F2"; 
     timelineElement.appendChild(feedHeader);
 
@@ -71,7 +89,8 @@ function createTweetElement(tweet) {
     tweetContainer.style.borderRadius = '8px';
 
     const avatarImg = document.createElement('img');
-    avatarImg.src = tweet.author_avatar || 'https://via.placeholder.com/48/cccccc/000000?Text=N/A'; 
+    // Using placehold.co for fallback, consistent with MOCK_TWEET_DATA
+    avatarImg.src = tweet.author_avatar || 'https://placehold.co/48x48/cccccc/000000/png?text=N/A'; 
     avatarImg.alt = `${tweet.author_name || 'Unknown Author'}'s avatar`; 
     avatarImg.style.width = '48px';
     avatarImg.style.height = '48px';
