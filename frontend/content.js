@@ -20,7 +20,7 @@ function renderCustomFeed(tweets, feedType) {
     let timelineElement = document.querySelector(timelineSelector);
 
     if (!timelineElement) {
-        console.warn(`X Feed Simulator: Primary timeline selector "${timelineSelector}" not found. Attempting fallback.`);
+        console.warn(`X Feed Simulator: Primary timeline selector "${timelineSelector}" not found. Attempting fallback (less reliable).`);
         const primaryColumn = document.querySelector('div[data-testid="primaryColumn"]');
         if (primaryColumn) {
             timelineElement = primaryColumn.querySelector('section > div > div'); 
@@ -37,17 +37,30 @@ function renderCustomFeed(tweets, feedType) {
     timelineElement.innerHTML = ''; 
     console.log("X Feed Simulator: Cleared existing timeline content.");
 
+    // Adding "Switch back to my feed" button
     const switchBackButton = document.createElement('button');
     switchBackButton.textContent = 'Switch back to my original X feed';
-    switchBackButton.className = 'sim-switch-back-button'; // Assign class
+    switchBackButton.style.display = 'block';
+    switchBackButton.style.margin = '10px auto 20px auto';
+    switchBackButton.style.padding = '10px 15px';
+    switchBackButton.style.backgroundColor = '#1DA1F2'; // Twitter blue
+    switchBackButton.style.color = 'white';
+    switchBackButton.style.border = 'none';
+    switchBackButton.style.borderRadius = '20px'; // Pill shape
+    switchBackButton.style.cursor = 'pointer';
+    switchBackButton.style.fontSize = '15px';
+    switchBackButton.style.fontWeight = 'bold';
     switchBackButton.onclick = function() {
-        location.reload();
+        location.reload(); // Simple page reload
     };
     timelineElement.appendChild(switchBackButton);
 
+    // Adding a heading to indicate it's a simulated feed, including the feedType
     const feedHeader = document.createElement('h2');
     feedHeader.textContent = `Simulated X Feed (${feedType || 'Following'} - via Extension)`; 
-    feedHeader.className = 'sim-feed-header'; // Assign class
+    feedHeader.style.textAlign = "center";
+    feedHeader.style.padding = "0px 0px 20px 0px"; 
+    feedHeader.style.color = "#1DA1F2"; 
     timelineElement.appendChild(feedHeader);
 
     if (tweets && tweets.length > 0) {
@@ -71,6 +84,7 @@ function createTweetElement(tweet) {
     tweetContainer.className = 'sim-tweet-container'; // Use class
 
     const avatarImg = document.createElement('img');
+    // Using placehold.co for fallback, consistent with MOCK_TWEET_DATA
     avatarImg.src = tweet.author_avatar || 'https://placehold.co/48x48/cccccc/000000/png?text=N/A'; 
     avatarImg.alt = `${tweet.author_name || 'Unknown Author'}'s avatar`; 
     avatarImg.className = 'sim-tweet-avatar'; 

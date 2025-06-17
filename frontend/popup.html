@@ -7,7 +7,7 @@
 <body>
     <h1>X Feed Simulator</h1>
 
-    <div>
+    <div class="section" id="add-account-section">
         <h2>Add New Account</h2>
         <label for="accountName">Account Name:</label>
         <input type="text" id="accountName" placeholder="e.g., Friend's X">
@@ -21,7 +21,7 @@
         <button id="saveAccountButton">Save Account</button>
     </div>
 
-    <div style="margin-top: 15px; margin-bottom: 10px;">
+    <div class="section" id="feed-type-section">
         <label for="feedType">Select Feed Type to View:</label>
         <select id="feedType">
             <option value="Following" selected>Following</option>
@@ -29,7 +29,13 @@
         </select>
     </div>
 
-    <div>
+    <div id="loadingIndicator" style="display: none; text-align: center; padding: 10px; color: #555;">
+        <i>Loading feed data...</i>
+    </div>
+
+
+
+    <div class="section" id="saved-accounts-section">
         <h2>Saved Accounts</h2>
         <div id="account-list">
         </div>

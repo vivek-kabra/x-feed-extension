@@ -5,28 +5,28 @@ const MOCK_TWEET_DATA = [
         text: "Hello world! This is my first mock tweet for the X Feed Simulator. #FrontendFun",
         author_name: "Mocking Bird",
         author_handle: "@mockUserDev",
-        author_avatar: "https://placehold.co/48x48/007bff/ffffff/png?text=MB" // CHANGED to placehold.co
+        author_avatar: "https://placehold.co/48x48/007bff/ffffff/png?text=MB"
     },
     {
         id: "mock_tweet_002",
         text: "Just enjoying a lovely day coding. This extension is going to be awesome! 🎉💻",
         author_name: "Dev Enthusiast",
         author_handle: "@codeLover23",
-        author_avatar: "https://placehold.co/48x48/28a745/ffffff/png?text=DE" // CHANGED to placehold.co
+        author_avatar: "https://placehold.co/48x48/28a745/ffffff/png?text=DE"
     },
     {
         id: "mock_tweet_003",
         text: "A slightly longer mock tweet to see how the text rendering will behave. We need to ensure that long strings of text wrap correctly and do not break the layout of our beautifully crafted custom tweet elements. Hopefully, this is long enough!",
         author_name: "Ms. Verbose",
         author_handle: "@talksalot",
-        author_avatar: "https://placehold.co/48x48/ffc107/000000/png?text=MV" // CHANGED to placehold.co
+        author_avatar: "https://placehold.co/48x48/ffc107/000000/png?text=MV"
     },
     {
         id: "mock_tweet_004",
         text: "Short and sweet.",
         author_name: "Concise Coder",
         author_handle: "@briefBits",
-        author_avatar: "https://placehold.co/48x48/6f42c1/ffffff/png?text=CC" // CHANGED to placehold.co
+        author_avatar: "https://placehold.co/48x48/6f42c1/ffffff/png?text=CC"
     }
 ];
 
@@ -41,10 +41,8 @@ document.addEventListener('DOMContentLoaded', function() {
         console.error("Save button not found!");
     }
 
-    // Calling displayAccounts when the popup is loaded to show any existing accounts
     displayAccounts();
 
-    // --- Function to save a new account ---
     function saveAccount() {
         console.log("Save Account button clicked");
 
@@ -73,7 +71,6 @@ document.addEventListener('DOMContentLoaded', function() {
         chrome.storage.local.get({ accounts: [] }, function(data) {
             const accounts = data.accounts;
             console.log("Existing accounts from storage (before save):", accounts);
-
             accounts.push(newAccount);
 
             chrome.storage.local.set({ accounts: accounts }, function() {
@@ -83,18 +80,15 @@ document.addEventListener('DOMContentLoaded', function() {
                 } else {
                     console.log("Account saved successfully!");
                     alert("Account saved!");
-
                     accountNameInput.value = '';
                     authTokenInput.value = '';
                     ct0TokenInput.value = '';
-
                     displayAccounts();
                 }
             });
         });
     }
 
-    // --- Function to display saved accounts ---
     function displayAccounts() {
         console.log("Attempting to display accounts");
         const accountListDiv = document.getElementById('account-list');
@@ -102,7 +96,6 @@ document.addEventListener('DOMContentLoaded', function() {
             console.error("Account list div not found!");
             return;
         }
-
         accountListDiv.innerHTML = '';
 
         chrome.storage.local.get({ accounts: [] }, function(data) {
@@ -129,7 +122,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 viewButton.textContent = 'View';
                 viewButton.className = 'view-button';
                 viewButton.dataset.accountId = account.id;
-                viewButton.addEventListener('click', handleViewAccount); 
+                viewButton.addEventListener('click', handleViewAccount);
 
                 const deleteButton = document.createElement('button');
                 deleteButton.textContent = 'Delete';
@@ -146,7 +139,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // --- Function to handle account deletion ---
     function handleDeleteAccount(event) {
         const accountIdToDelete = event.target.dataset.accountId;
         console.log("Attempting to delete account with ID:", accountIdToDelete);
@@ -177,8 +169,11 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // --- Function to handle viewing an account's feed (MOCKED) ---
     function handleViewAccount(event) {
+
+        const loadingIndicator = document.getElementById('loadingIndicator');
+        if (loadingIndicator) loadingIndicator.style.display = 'block';
+
         const accountIdToView = event.target.dataset.accountId;
         console.log("View button clicked for account ID (MOCK MODE):", accountIdToView);
 
@@ -188,16 +183,22 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
 
+        // Getting the selected feed type
+        const feedTypeSelect = document.getElementById('feedType');
+        const selectedFeedType = feedTypeSelect ? feedTypeSelect.value : 'Following'; // Default if element not found
+        console.log("Selected feed type:", selectedFeedType);
+
         chrome.storage.local.get({ accounts: [] }, function(storageData) {
             const accountToView = storageData.accounts.find(acc => acc.id === accountIdToView);
             const accountDisplayName = accountToView ? accountToView.name : `(Unknown/Mocked Account: ${accountIdToView})`;
 
-            console.log(`Simulating feed view for account: ${accountDisplayName}.`);
+            console.log(`Simulating '${selectedFeedType}' feed view for account: ${accountDisplayName}.`);
+            
+            const responseData = MOCK_TWEET_DATA; 
 
-            const responseData = MOCK_TWEET_DATA; // Our mock data
-
-            console.log('Mock backend call successful. "Received" data (in popup):', responseData);
-
+            console.log(`Mock backend call successful for '${selectedFeedType}'. "Received" data (in popup):`, responseData);
+            if (loadingIndicator) loadingIndicator.style.display = 'none';
+            
             if (responseData && responseData.length > 0) {
                 chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
                     const activeTab = tabs[0];
@@ -208,12 +209,13 @@ document.addEventListener('DOMContentLoaded', function() {
                         }, () => {
                             if (chrome.runtime.lastError) {
                                 console.error('popup.js: Error injecting content script:', chrome.runtime.lastError.message);
-                                alert('Error injecting script. Check console. Is the page protected (e.g. chrome:// pages)? Are you on x.com?');
+                                alert('Error injecting script. Check console.');
                                 return;
                             }
-                            console.log("popup.js: Content script presumed injected/already present. Sending message...");
+                            console.log("popup.js: Content script presumed injected. Sending message with feed type:", selectedFeedType);
                             chrome.tabs.sendMessage(activeTab.id, {
                                 action: "displayFeed",
+                                feedType: selectedFeedType, // Pass the feed type
                                 data: responseData
                             }, (responseFromContentScript) => {
                                 if (chrome.runtime.lastError) {
@@ -221,18 +223,18 @@ document.addEventListener('DOMContentLoaded', function() {
                                 } else if (responseFromContentScript) {
                                     console.log("popup.js: Response from content script:", responseFromContentScript);
                                 } else {
-                                    console.log("popup.js: Message sent to content script, no specific response received (which can be normal).");
+                                    console.log("popup.js: Message sent to content script, no specific response.");
                                 }
                             });
                         });
                     } else {
-                        console.error("popup.js: Could not get active tab ID to inject script.");
+                        console.error("popup.js: Could not get active tab ID.");
                         alert("Error: Could not identify active tab.");
                     }
                 });
             } else {
-                console.error("popup.js: No MOCK_TWEET_DATA to send to content script.");
-                alert("No data available to display.");
+                console.error("popup.js: No data to send to content script for feed type:", selectedFeedType);
+                alert("No MOCK_TWEET_DATA available to display.");
             }
         });
     }
