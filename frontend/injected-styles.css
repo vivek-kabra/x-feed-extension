@@ -1,0 +1,101 @@
+/* --- Styling for the elements injected by content.js --- */
+
+/* The main header for the simulated feed */
+.sim-feed-header {
+    text-align: center;
+    padding: 10px 0px 15px 0px; 
+    color: rgb(29, 161, 242);   
+    font-size: 19px;             
+    font-weight: bold;
+    border-bottom: 1px solid rgb(235, 238, 240); 
+    margin-bottom: 10px;
+    font-family: "TwitterChirp", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+/* The "Switch back to my original X feed" button */
+.sim-switch-back-button {
+    display: block;
+    margin: 15px auto 20px auto; 
+    padding: 10px 20px;
+    background-color: rgb(29, 161, 242);
+    color: white;
+    border: none;
+    border-radius: 9999px; 
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: bold;
+    transition: background-color 0.2s ease;
+    font-family: "TwitterChirp", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+.sim-switch-back-button:hover {
+    background-color: rgb(26, 145, 218); 
+}
+
+/* --- Styling for individual simulated tweets --- */
+
+/* General container for each simulated tweet */
+.sim-tweet-container {
+    background-color: #ffffff; 
+    border: 1px solid rgb(235, 238, 240); 
+    padding: 12px 16px; 
+    font-family: "TwitterChirp", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    position: relative; 
+}
+
+/* The user's avatar image */
+.sim-tweet-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%; 
+    margin-right: 12px;
+    float: left; 
+    background-color: #e1e8ed; /* Fallback color if image doesn't load */
+}
+
+/* Container for the text content (name, handle, tweet text) to the right of the avatar */
+.sim-tweet-content {
+    overflow: hidden; 
+}
+
+/* Container for the author's name and handle */
+.sim-tweet-author-info {
+    margin-bottom: 2px; 
+    display: flex; 
+    align-items: baseline; 
+    font-size: 15px; 
+}
+
+/* Author's display name */
+.sim-tweet-author-name {
+    font-weight: bold;
+    color: rgb(15, 20, 25); 
+    margin-right: 4px;
+    text-decoration: none; 
+}
+
+.sim-tweet-author-name:hover {
+    text-decoration: underline; /* Common X.com hover for names */
+}
+
+/* Author's handle (e.g., @username) */
+.sim-tweet-author-handle {
+    color: rgb(83, 100, 113);
+    text-decoration: none;
+}
+
+/* The main text content of the tweet */
+.sim-tweet-text {
+    color: rgb(15, 20, 25);
+    font-size: 15px;
+    line-height: 20px;       
+    white-space: pre-wrap;   
+    word-wrap: break-word;   
+    margin-top: 0;           
+    margin-bottom: 0;
+}
+
+/* Utility class to clear floats, ensures subsequent elements aren't affected by the floated avatar */
+.sim-tweet-clear {
+    clear: both;
+}
