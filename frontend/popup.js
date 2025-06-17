@@ -170,6 +170,10 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function handleViewAccount(event) {
+
+        const loadingIndicator = document.getElementById('loadingIndicator');
+        if (loadingIndicator) loadingIndicator.style.display = 'block';
+
         const accountIdToView = event.target.dataset.accountId;
         console.log("View button clicked for account ID (MOCK MODE):", accountIdToView);
 
@@ -193,6 +197,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const responseData = MOCK_TWEET_DATA; 
 
             console.log(`Mock backend call successful for '${selectedFeedType}'. "Received" data (in popup):`, responseData);
+            if (loadingIndicator) loadingIndicator.style.display = 'none';
             
             if (responseData && responseData.length > 0) {
                 chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
