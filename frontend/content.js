@@ -37,25 +37,23 @@ function renderCustomFeed(tweets, feedType) {
     timelineElement.innerHTML = ''; 
     console.log("X Feed Simulator: Cleared existing timeline content.");
 
-    // Adding "Switch back to my feed" button
     const switchBackButton = document.createElement('button');
     switchBackButton.textContent = 'Switch back to my original X feed';
     switchBackButton.style.display = 'block';
     switchBackButton.style.margin = '10px auto 20px auto';
     switchBackButton.style.padding = '10px 15px';
-    switchBackButton.style.backgroundColor = '#1DA1F2'; // Twitter blue
+    switchBackButton.style.backgroundColor = '#1DA1F2';
     switchBackButton.style.color = 'white';
     switchBackButton.style.border = 'none';
-    switchBackButton.style.borderRadius = '20px'; // Pill shape
+    switchBackButton.style.borderRadius = '20px'; 
     switchBackButton.style.cursor = 'pointer';
     switchBackButton.style.fontSize = '15px';
     switchBackButton.style.fontWeight = 'bold';
     switchBackButton.onclick = function() {
-        location.reload(); // Simple page reload
+        location.reload();
     };
     timelineElement.appendChild(switchBackButton);
 
-    // Adding a heading to indicate it's a simulated feed, including the feedType
     const feedHeader = document.createElement('h2');
     feedHeader.textContent = `Simulated X Feed (${feedType || 'Following'} - via Extension)`; 
     feedHeader.style.textAlign = "center";
@@ -72,7 +70,7 @@ function renderCustomFeed(tweets, feedType) {
     } else {
         const noTweetsMessage = document.createElement('p');
         noTweetsMessage.textContent = "No tweets to display in the simulated feed."; 
-        noTweetsMessage.style.textAlign = "center"; // Keeping some basic inline style for this simple element
+        noTweetsMessage.style.textAlign = "center"; 
         noTweetsMessage.style.padding = "20px";
         timelineElement.appendChild(noTweetsMessage);
         console.log("X Feed Simulator: No mock tweets to render.");
@@ -81,10 +79,9 @@ function renderCustomFeed(tweets, feedType) {
 
 function createTweetElement(tweet) {
     const tweetContainer = document.createElement('div');
-    tweetContainer.className = 'sim-tweet-container'; // Use class
+    tweetContainer.className = 'sim-tweet-container'; 
 
     const avatarImg = document.createElement('img');
-    // Using placehold.co for fallback, consistent with MOCK_TWEET_DATA
     avatarImg.src = tweet.author_avatar || 'https://placehold.co/48x48/cccccc/000000/png?text=N/A'; 
     avatarImg.alt = `${tweet.author_name || 'Unknown Author'}'s avatar`; 
     avatarImg.className = 'sim-tweet-avatar'; 
@@ -106,12 +103,7 @@ function createTweetElement(tweet) {
     authorInfoDiv.appendChild(authorNameSpan);
     authorInfoDiv.appendChild(authorHandleSpan);
 
-    const tweetTextP = document.createElement('p');
-    tweetTextP.textContent = tweet.text || '(No text content)';
-    tweetTextP.className = 'sim-tweet-text';
-
     contentDiv.appendChild(authorInfoDiv);
-    contentDiv.appendChild(tweetTextP);
 
     tweetContainer.appendChild(avatarImg);
     tweetContainer.appendChild(contentDiv);
@@ -119,6 +111,41 @@ function createTweetElement(tweet) {
     const clearDiv = document.createElement('div');
     clearDiv.className = 'sim-tweet-clear'; 
     tweetContainer.appendChild(clearDiv);
+
+    const tweetTextElement = document.createElement('p');
+    tweetTextElement.className = 'sim-tweet-text';
+    let tweetText = tweet.text; 
+
+    const mediaContainer = document.createElement('div');
+    mediaContainer.className = 'custom-media-container'; 
+
+    if (tweet.media && tweet.media.length > 0) {
+        tweet.media.forEach(mediaItem => {
+            tweetText = tweetText.replace(mediaItem.tco_url, '');
+
+            if (mediaItem.type === 'photo') {
+                const img = document.createElement('img');
+                img.src = mediaItem.url;
+                img.style.width = '100%'; 
+                img.style.borderRadius = '16px';
+                mediaContainer.appendChild(img);
+            } else if (mediaItem.type === 'video' || mediaItem.type === 'animated_gif') {
+                const video = document.createElement('video');
+                video.src = mediaItem.url;
+                video.controls = true; 
+                video.autoplay = false; 
+                video.muted = true; 
+                video.loop = (mediaItem.type === 'animated_gif');
+                video.style.width = '100%';
+                video.style.borderRadius = '16px';
+             mediaContainer.appendChild(video);
+            }
+        });
+    }
+
+    tweetTextElement.textContent = tweetText;
+    contentDiv.appendChild(tweetTextElement); 
+    contentDiv.appendChild(mediaContainer); 
 
     return tweetContainer;
 }
