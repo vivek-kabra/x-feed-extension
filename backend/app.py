@@ -20,12 +20,31 @@ async def fetch_x_feed(auth_token, ct0_token, feed_type):
     
     formatted_tweets= []
     for tweet in timeline_tweets:
+        tweet_media = []
+        if tweet.media:
+            for media_item in tweet.media:
+                media_url = ''
+                if media_item.type == 'photo':
+                    media_url = media_item.media_url
+                
+                if media_item.type == 'video' and media_item.video_info:
+                    variants = sorted(media_item.video_info['variants'], key=lambda v: v.get('bitrate', 0), reverse=True) #Finding best quality of video
+                    if variants:
+                        media_url = variants[0]['url']
+                
+                tweet_media.append({
+                    'type': media_item.type, # 'photo', 'video', 'animated_gif'
+                    'url': media_url, 
+                    'tco_url': media_item.url #For cleanup
+                })
+
         formatted_tweets.append({
             'id': tweet.id,
             'text': tweet.text,
             'author_name': tweet.user.name,
             'author_handle': tweet.user.screen_name,
             'author_avatar': tweet.user.profile_image_url,
+            'media': tweet_media
         })
     return formatted_tweets
 
