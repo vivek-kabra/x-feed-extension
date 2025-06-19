@@ -2,6 +2,7 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 from twikit import Client
 import asyncio
+from datetime import timezone
 
 app= Flask(__name__)
 CORS(app)
@@ -44,7 +45,12 @@ async def fetch_x_feed(auth_token, ct0_token, feed_type):
             'author_name': tweet.user.name,
             'author_handle': tweet.user.screen_name,
             'author_avatar': tweet.user.profile_image_url,
-            'media': tweet_media
+            'media': tweet_media,
+            'created_at': tweet.created_at if hasattr(tweet, 'created_at') else 0,
+            'reply_count': tweet.reply_count if hasattr(tweet, 'reply_count') else 0,
+            'repost_count': tweet.retweet_count if hasattr(tweet, 'retweet_count') else 0,
+            'like_count': tweet.favorite_count if hasattr(tweet, 'favorite_count') else 0,
+            'view_count': tweet.view_count if hasattr(tweet, 'view_count') and tweet.view_count is not None else 0
         })
     return formatted_tweets
 
