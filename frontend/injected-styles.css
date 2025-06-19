@@ -2,8 +2,10 @@
 .sim-switch-back-button,
 .sim-tweet-container,
 .sim-tweet-author-name,
-.sim-tweet-author-handle,
-.sim-tweet-text {
+.sim-tweet-author-handle, 
+.sim-tweet-text,
+.sim-tweet-timestamp,
+.sim-tweet-stat {
     font-family: "TwitterChirp", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 }
 
@@ -57,6 +59,7 @@
     display: flex;
     align-items: baseline;
     font-size: 15px;
+    flex-wrap: wrap; 
 }
 
 .sim-tweet-author-name {
@@ -69,8 +72,12 @@
 }
 
 .sim-tweet-author-handle {
-    color: rgba(83, 100, 113, 1); 
     text-decoration: none;
+    margin-right: 4px; 
+}
+
+.sim-tweet-timestamp {
+    font-size: 14px; 
 }
 
 .sim-tweet-text {
@@ -78,31 +85,106 @@
     line-height: 20px;
     white-space: pre-wrap;
     word-wrap: break-word;
-    margin-top: 0;
-    margin-bottom: 0;
+    margin-top: 4px; 
+    margin-bottom: 8px; 
+}
+
+.sim-tweet-mention {
+    color: rgb(29, 155, 240); 
+    text-decoration: none;
+}
+.sim-tweet-mention:hover {
+    text-decoration: underline;
 }
 
 .custom-media-container {
     margin-top: 10px;
-    border-radius: 16px;
-    overflow: hidden;
+    border-radius: 16px; 
+    overflow: hidden; 
 }
 
-.custom-media-container img,
-.custom-media-container video {
+.sim-tweet-media-img,
+.sim-tweet-media-video {
     display: block;
     max-width: 100%;
     border-radius: 16px; 
+    margin-top: 8px;
+}
+
+.sim-tweet-action-bar {
+    display: flex;
+    justify-content: space-around; 
+    margin-top: 12px; 
+    padding-top: 8px; 
+}
+
+.sim-tweet-stat {
+    display: flex;
+    align-items: center;
+    font-size: 13px; 
+    cursor: pointer; 
+    padding: 4px 8px; 
+    border-radius: 16px; 
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.sim-tweet-stat-icon {
+    margin-right: 6px; 
+    line-height: 1; 
+    display: inline-block; 
+    width: 18px;  
+    height: 18px; 
+    vertical-align: text-bottom; 
+}
+
+.sim-tweet-stat-icon .sim-stat-svg-icon { 
+    display: block; 
+    width: 100%;
+    height: 100%;
+    fill: currentColor; 
+}
+
+.sim-tweet-stat-count {
+    line-height: 1;
+}
+
+.sim-action-reply:hover {
+    background-color: rgba(29, 155, 240, 0.1); 
+}
+.sim-action-reply:hover .sim-tweet-stat-icon,
+.sim-action-reply:hover .sim-tweet-stat-count {
+    color: rgb(29, 155, 240); 
+}
+
+.sim-action-repost:hover {
+    background-color: rgba(0, 186, 124, 0.1); 
+}
+.sim-action-repost:hover .sim-tweet-stat-icon,
+.sim-action-repost:hover .sim-tweet-stat-count {
+    color: rgb(0, 186, 124); 
+}
+
+.sim-action-like:hover {
+    background-color: rgba(249, 24, 128, 0.1); 
+}
+.sim-action-like:hover .sim-tweet-stat-icon,
+.sim-action-like:hover .sim-tweet-stat-count {
+    color: rgb(249, 24, 128); 
+}
+
+.sim-action-views:hover { 
+    background-color: rgba(83, 100, 113, 0.1); 
 }
 
 .sim-tweet-clear {
     clear: both;
 }
 
-/* --- Light Theme Specific Styles --- */
-/* body { 
+.sim-no-tweets-message {
+    text-align: center;
+    padding: 20px;
+}
 
-} */
 
 .sim-feed-header {
     color: rgb(29, 155, 240);
@@ -118,11 +200,35 @@
     color: black; 
 }
 
+.sim-tweet-author-handle { 
+    color: rgba(83, 100, 113, 1);
+}
+
+.sim-tweet-timestamp {
+    color: rgba(83, 100, 113, 1); 
+}
+
 .sim-tweet-text {
     color: black; 
 }
 
-/* --- Dark Theme Specific Styles --- */
+.sim-tweet-action-bar {
+    border-top: 1px solid rgb(235, 238, 240); 
+}
+
+.sim-tweet-stat {
+    color: rgb(83, 100, 113); 
+}
+
+.sim-tweet-media-img,
+.sim-tweet-media-video {
+    border: 1px solid rgb(204, 214, 221); 
+}
+
+.sim-no-tweets-message {
+    color: rgb(83, 100, 113);
+}
+
 @media (prefers-color-scheme: dark) {
     .sim-feed-header {
         border-bottom-color: rgb(56, 68, 77); 
@@ -133,14 +239,36 @@
         border-bottom-color: rgb(56, 68, 77); 
     }
 
-
     .sim-tweet-author-name {
-        color: rgb(217, 217, 217);
-                                    
+        color: rgb(217, 217, 217);                 
+    }
+
+    .sim-tweet-author-handle { 
+        color: rgba(113, 118, 123, 1);
+    }
+
+    .sim-tweet-timestamp {
+        color: rgba(113, 118, 123, 1); 
     }
 
     .sim-tweet-text {
-        color: rgb(217, 217, 217);
-                                    
+        color: rgb(217, 217, 217);                 
+    }
+
+    .sim-tweet-action-bar {
+        border-top-color: rgb(56, 68, 77); 
+    }
+
+    .sim-tweet-stat {
+        color: rgb(113, 118, 123); 
+    }
+    
+    .sim-tweet-media-img,
+    .sim-tweet-media-video {
+        border-color: rgb(56, 68, 77); 
+    }
+    
+    .sim-no-tweets-message {
+        color: rgb(113, 118, 123);
     }
 }
