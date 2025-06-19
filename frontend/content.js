@@ -77,6 +77,15 @@ function renderCustomFeed(tweets, feedType) {
     }
 }
 
+function linkifyMentions(text) {
+    const mentionRegex = /@(\w+)/g;
+    
+    return text.replace(mentionRegex, (match, username) => {
+        return `<style>.sim-tweet-mention{color:#4a99e9;text-decoration:none}.sim-tweet-mention:hover{text-decoration:underline}</style><a href="https://x.com/${username}" target="_blank" rel="noopener noreferrer" class="sim-tweet-mention">${match}</a>`;
+
+    });
+}
+
 function createTweetElement(tweet) {
     const tweetContainer = document.createElement('div');
     tweetContainer.className = 'sim-tweet-container'; 
@@ -97,7 +106,7 @@ function createTweetElement(tweet) {
     authorNameSpan.className = 'sim-tweet-author-name'; 
 
     const authorHandleSpan = document.createElement('span');
-    authorHandleSpan.textContent = tweet.author_handle || '@unknown';
+    authorHandleSpan.textContent = '@'+tweet.author_handle || '@unknown';
     authorHandleSpan.className = 'sim-tweet-author-handle'; 
 
     authorInfoDiv.appendChild(authorNameSpan);
@@ -128,6 +137,7 @@ function createTweetElement(tweet) {
                 img.src = mediaItem.url;
                 img.style.width = '100%'; 
                 img.style.borderRadius = '16px';
+                img.style.marginTop = '8px';
                 mediaContainer.appendChild(img);
             } else if (mediaItem.type === 'video' || mediaItem.type === 'animated_gif') {
                 const video = document.createElement('video');
@@ -138,12 +148,13 @@ function createTweetElement(tweet) {
                 video.loop = (mediaItem.type === 'animated_gif');
                 video.style.width = '100%';
                 video.style.borderRadius = '16px';
+                video.style.marginTop = '8px';
              mediaContainer.appendChild(video);
             }
         });
     }
 
-    tweetTextElement.textContent = tweetText;
+    tweetTextElement.innerHTML= linkifyMentions(tweetText);
     contentDiv.appendChild(tweetTextElement); 
     contentDiv.appendChild(mediaContainer); 
 
