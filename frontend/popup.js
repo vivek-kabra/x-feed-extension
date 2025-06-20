@@ -135,7 +135,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (loadingIndicator) loadingIndicator.style.display = 'block';
 
         let responseData = null; // Initialize responseData for the current operation
-        let selectedFeedTypeForMessage = 'Following'; // Default for messaging
+        let selectedFeedTypeForMessage = 'ForYou'; 
 
         try {
             const accountIdToView = event.target.dataset.accountId;
@@ -146,7 +146,7 @@ document.addEventListener('DOMContentLoaded', function() {
             console.log("View button clicked for account ID:", accountIdToView);
 
             const feedTypeSelect = document.getElementById('feedType');
-            selectedFeedTypeForMessage = feedTypeSelect ? feedTypeSelect.value : 'Following';
+            selectedFeedTypeForMessage = feedTypeSelect ? feedTypeSelect.value : 'ForYou';
             console.log("Selected feed type in UI:", selectedFeedTypeForMessage);
 
             // Promisify chrome.storage.local.get to use await
@@ -174,7 +174,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // The dropdown value is "ForYou" or "Following".
             if (selectedFeedTypeForMessage === 'ForYou') {
                 endpoint = '/get_for_you_feed';
-            } else { // Default to "Following"
+            } else { 
                 endpoint = '/get_following_feed'; // Match backend route
             }
             const fullApiUrl = backendBaseUrl + endpoint;
