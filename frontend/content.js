@@ -76,6 +76,14 @@ function renderCustomFeed(tweets, feedType) {
     
     console.log("X Feed Simulator: Found timeline element:", timelineElement);
 
+    // Hide the native "For you"/"Following" tabs
+    const topTabsContainer = document.querySelector('[role="tablist"]');
+    if (topTabsContainer) {
+        topTabsContainer.style.display = 'none';
+        console.log("X Feed Simulator: Hid the top tab navigation.");
+    }
+
+
     timelineElement.innerHTML = ''; 
     console.log("X Feed Simulator: Cleared existing timeline content.");
 
