@@ -3,40 +3,73 @@
 <head>
     <title>X Feed Simulator</title>
     <link rel="stylesheet" type="text/css" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script> 
 </head>
 <body>
     <h1>X Feed Simulator</h1>
 
-    <div class="section" id="add-account-section">
-        <h2>Add New Account</h2>
-        <label for="accountName">Account Name:</label>
-        <input type="text" id="accountName" placeholder="e.g., Friend's X">
-
-        <label for="authToken">Auth Token (auth_token):</label>
-        <input type="text" id="authToken" placeholder="Enter auth_token">
-
-        <label for="ct0Token">CT0 Token (ct0):</label>
-        <input type="text" id="ct0Token" placeholder="Enter ct0 token">
-
-        <button id="saveAccountButton">Save Account</button>
+    <div id="authSection" class="section">
+        <h2>Login or Sign Up to Share Your Feed</h2>
+        <div>
+            <label for="emailInput">Email:</label>
+            <input type="email" id="emailInput" placeholder="your@email.com">
+        </div>
+        <div>
+            <label for="passwordInput">Password:</label>
+            <input type="password" id="passwordInput" placeholder="Password">
+        </div>
+        <button id="loginButton">Login</button>
+        <button id="signUpButton">Sign Up</button>
+        <p id="authError" class="error-message" style="display:none;"></p>
     </div>
 
-    <div class="section" id="feed-type-section">
-        <label for="feedType">Select Feed Type to View:</label>
-        <select id="feedType">
-            <option value="ForYou" selected>For you</option>
-            <option value="Following">Following</option>
-        </select>
+    <div id="sharingSection" class="section" style="display:none;">
+        <h2>Share Your X Feed Settings</h2>
+        <p>Logged in as: <span id="currentUserEmail"></span> <button id="logoutButton" class="small-button">Logout</button></p>
+        
+        <div>
+            <label for="myXHandleInput">Your X Handle (e.g., @yourXhandle):</label>
+            <input type="text" id="myXHandleInput" placeholder="@yourXhandle">
+        </div>
+        <div>
+            <label for="myDisplayNameInput">Display Name for Sharing (Optional):</label>
+            <input type="text" id="myDisplayNameInput" placeholder="Your Name">
+        </div>
+        <div class="toggle-container">
+            <input type="checkbox" id="makePublicToggle">
+            <label for="makePublicToggle" class="toggle-label">Make my feed publicly viewable by handle</label>
+        </div>
+        <button id="saveShareSettingsButton">Save Sharing Settings</button>
+        <p id="shareError" class="error-message" style="display:none;"></p>
+        <p id="shareSuccess" class="success-message" style="display:none;"></p>
     </div>
 
-    <div id="loadingIndicator" style="display: none; text-align: center; padding: 10px; color: #555;">
-        <i>Loading feed data...</i>
+    <hr> 
+
+    <div id="viewerSection" class="section">
+        <h2>View Friend's X Feed</h2>
+        <div>
+            <label for="viewFriendHandleInput">Friend's X Handle (e.g., @theirXhandle):</label>
+            <input type="text" id="viewFriendHandleInput" placeholder="@theirXhandle">
+        </div>
+        <div>
+            <label for="feedType">Select Feed Type:</label>
+            <select id="feedType">
+                <option value="Following" selected>Following</option> 
+                <option value="ForYou">For You</option>
+            </select>
+        </div>
+        <button id="viewFeedButton">View Feed</button>
+        <div id="loadingIndicator" style="display: none; text-align: center; padding: 10px;">
+            <i>Loading feed data...</i>
+        </div>
+        <p id="viewError" class="error-message" style="display:none;"></p>
     </div>
+    
+    <hr> 
 
-
-
-    <div class="section" id="saved-accounts-section">
-        <h2>Saved Accounts</h2>
+    <div id="savedAccountsSection" class="section">
+        <h2>Recently Viewed Accounts</h2>
         <div id="account-list">
         </div>
     </div>
