@@ -1,8 +1,28 @@
+import os
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from twikit import Client
 import asyncio
 from datetime import timezone
+from dotenv import load_dotenv
+from supabase import create_client
+from cryptography.fernet import Fernet
+
+
+#Loading environment variables from .env file
+load_dotenv()
+
+#Initializing Supabase client using secrets from .env
+#We will use SERVICE_ROLE_KEY for all backend operations
+supabase_url = os.environ.get("SUPABASE_URL")
+supabase_key = os.environ.get("SUPABASE_SERVICE_KEY")
+supabase = create_client(supabase_url, supabase_key)
+print("Supabase client initialized.")
+
+#Initializing Cryptography Suite using the secret from .env
+encryption_key = os.environ.get("ENCRYPTION_KEY").encode()
+fernet = Fernet(encryption_key)
+print("Encryption suite initialized.")
 
 app= Flask(__name__)
 CORS(app)
