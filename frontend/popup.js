@@ -1,9 +1,8 @@
-// --- Supabase and Backend Configuration ---
 const SUPABASE_URL = 'YOUR_SUPABASE_PROJECT_URL'; 
 const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY'; 
 const supabase = supabaseJs.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-const BACKEND_URL = 'http://localhost:5000'; 
+const BACKEND_URL = 'http://127.0.0.1:5000'; 
 
 
 document.addEventListener('DOMContentLoaded', async function() {
@@ -320,9 +319,122 @@ function handleDeleteViewedAccount(event) {
     });
 }
 
+
 async function handleViewFeedByHandle(event) {
-    console.log("handleViewFeedByHandle called. Full implementation in Stage 2.");
-    alert("Viewing feed by handle - functionality to be fully connected in Stage 2.");
+    console.log("View action triggered.");
+
+    const loadingIndicator = document.getElementById('loadingIndicator');
+    const viewErrorEl = document.getElementById('viewError');
+    const viewFriendHandleInput = document.getElementById('viewFriendHandleInput');
+    const feedTypeSelect = document.getElementById('feedType');
+
+    if (loadingIndicator) loadingIndicator.style.display = 'block';
+    if (viewErrorEl) {
+        viewErrorEl.textContent = '';
+        viewErrorEl.style.display = 'none';
+    }
+
+    let targetHandle = '';
+    if (event.target.dataset.accountHandle) {
+        targetHandle = event.target.dataset.accountHandle;
+        console.log(`Viewing handle from saved list: ${targetHandle}`);
+    } else {
+        targetHandle = viewFriendHandleInput.value.trim();
+        console.log(`Viewing handle from input field: ${targetHandle}`);
+    }
+
+    if (!targetHandle) {
+        alert('Please enter an X handle to view.');
+        if (loadingIndicator) loadingIndicator.style.display = 'none';
+        return;
+    }
+
+    const selectedFeedType = feedTypeSelect.value;
+    const endpoint = selectedFeedType === 'ForYou' ? '/get_for_you_feed' : '/get_following_feed';
+    const fullApiUrl = `${BACKEND_URL}${endpoint}`;
+    
+    const cleanTargetHandle = targetHandle.startsWith('@') ? targetHandle.substring(1) : targetHandle;
+
+    console.log(`Fetching from API: ${fullApiUrl} for handle: ${cleanTargetHandle}`);
+
+    try {
+        const response = await fetch(fullApiUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ target_x_handle: cleanTargetHandle })
+        });
+
+        const responseData = await response.json();
+
+        if (!response.ok) {
+            throw new Error(responseData.error || `Server returned status ${response.status}`);
+        }
+
+        console.log("Successfully received data from backend:", responseData);
+
+        saveViewedAccount(targetHandle);
+
+        chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+            const activeTab = tabs[0];
+            if (!activeTab || !activeTab.id) {
+                throw new Error("Could not find active tab to inject script.");
+            }
+            chrome.scripting.executeScript({
+                target: { tabId: activeTab.id },
+                files: ['content.js']
+            }, () => {
+                chrome.tabs.sendMessage(activeTab.id, {
+                    action: "displayFeed",
+                    feedType: selectedFeedType,
+                    data: responseData
+                }, (response) => {
+                    if (chrome.runtime.lastError) {
+                        console.warn("Message port closed error (often ignorable):", chrome.runtime.lastError.message);
+                    } else {
+                        console.log("Response from content script:", response);
+                    }
+                });
+            });
+        });
+
+    } catch (error) {
+        console.error('Error viewing feed:', error);
+        if (viewErrorEl) {
+            viewErrorEl.textContent = `Error: ${error.message}`;
+            viewErrorEl.style.display = 'block';
+        }
+    } finally {
+        if (loadingIndicator) loadingIndicator.style.display = 'none';
+    }
+}
+
+function saveViewedAccount(handle) {
+    chrome.storage.local.get({ viewedAccounts: [] }, (data) => {
+        let accounts = data.viewedAccounts;
+
+        const isDuplicate = accounts.some(acc => acc.handle === handle);
+        if (isDuplicate) {
+            console.log(`Handle '${handle}' already exists in viewed history. Not saving again.`);
+            return;
+        }
+
+        const newAccount = {
+            id: 'viewed_' + Date.now(),
+            handle: handle,
+            name: handle 
+        };
+
+        accounts.unshift(newAccount); 
+
+        if (accounts.length > 10) {
+            accounts = accounts.slice(0, 10);
+        }
+
+        chrome.storage.local.set({ viewedAccounts: accounts }, () => {
+            console.log(`Saved '${handle}' to viewed accounts history.`);
+            displayViewedAccounts(); 
+        });
+    });
 }
 
 displayViewedAccounts(); 
