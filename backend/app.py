@@ -188,41 +188,53 @@ def check_share_status_route():
 
 @app.route('/get_for_you_feed', methods=['POST'])
 def get_for_you_feed_route():
-    data= request.get_json()
-    if not data:
-        return jsonify({'error': 'No data provided'}), 400
-    
-    auth_token= data.get('auth_token')
-    ct0_token= data.get('ct0')
-    
-    if not auth_token or not ct0_token:
-        return jsonify({'error': 'Missing required tokens'}), 400
-    
     try:
-        tweets= asyncio.run(fetch_x_feed(auth_token, ct0_token, 'for_you'))
+        viewer_request_data = request.get_json()
+        target_x_handle = viewer_request_data.get('target_x_handle')
+        if not target_x_handle:
+            return jsonify({'error': 'target_x_handle is required'}), 400
+
+        response = supabase.table('shared_accounts').select(
+            'auth_token_encrypted, ct0_token_encrypted'
+        ).eq('owner_x_handle', target_x_handle).eq('is_public', True).single().execute()
+        
+        sharer_data = response.data
+
+        decrypted_auth_token = decrypt_token(sharer_data['auth_token_encrypted'])
+        decrypted_ct0_token = decrypt_token(sharer_data['ct0_token_encrypted'])
+
+        tweets = asyncio.run(fetch_x_feed(decrypted_auth_token, decrypted_ct0_token, 'for_you'))
         return jsonify(tweets)
+
     except Exception as e:
-        print(f"An error occurred: {e}")
-        return jsonify({'error': 'Failed to fetch feed. Tokens may be invalid or expired.'}), 500
+        print(f"An error occurred in /get_for_you_feed: {e}")
+        return jsonify({'error': 'Feed not found or is not shared publicly.'}), 404
     
 @app.route('/get_following_feed', methods=['POST'])
 def get_following_feed_route():
-    data= request.get_json()
-    if not data:
-        return jsonify({'error': 'No data provided'}), 400
-    
-    auth_token= data.get('auth_token')
-    ct0_token= data.get('ct0')
-    
-    if not auth_token or not ct0_token:
-        return jsonify({'error': 'Missing required tokens'}), 400
-    
     try:
-        tweets= asyncio.run(fetch_x_feed(auth_token, ct0_token, 'following'))
+        viewer_request_data = request.get_json()
+        target_x_handle = viewer_request_data.get('target_x_handle')
+
+        if not target_x_handle:
+            return jsonify({'error': 'target_x_handle is required'}), 400
+
+        response = supabase.table('shared_accounts').select(
+            'auth_token_encrypted, ct0_token_encrypted'
+        ).eq('owner_x_handle', target_x_handle).eq('is_public', True).single().execute()
+
+        sharer_data = response.data
+
+        decrypted_auth_token = decrypt_token(sharer_data['auth_token_encrypted'])
+        decrypted_ct0_token = decrypt_token(sharer_data['ct0_token_encrypted'])
+
+        tweets = asyncio.run(fetch_x_feed(decrypted_auth_token, decrypted_ct0_token, 'following'))
         return jsonify(tweets)
+
     except Exception as e:
-        print(f"An error occurred: {e}")
-        return jsonify({'error': 'Failed to fetch feed. Tokens may be invalid or expired.'}), 500
+        #This block handles multiple errors: record not found, decryption errors, Twikit errors
+        print(f"An error occurred in /get_following_feed: {e}")
+        return jsonify({'error': 'Feed not found or is not shared publicly.'}), 404
 
 if __name__== '__main__':
     app.run(debug=True, port=5000)
