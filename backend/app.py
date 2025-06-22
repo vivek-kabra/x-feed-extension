@@ -104,6 +104,7 @@ def share_feed_route():
         display_name= data.get('display_name')
 
         if not all([owner_x_handle, auth_token, ct0_token]):
+            print(owner_x_handle, auth_token, ct0_token)
             return jsonify({'error': 'Missing one or more required fields: owner_x_handle, auth_token, ct0_token'}), 400
 
         #Encrypt the sensitive tokens
@@ -221,20 +222,56 @@ def get_following_feed_route():
 
         response = supabase.table('shared_accounts').select(
             'auth_token_encrypted, ct0_token_encrypted'
-        ).eq('owner_x_handle', target_x_handle).eq('is_public', True).single().execute()
+        ).eq('owner_x_handle', target_x_handle).eq('is_public', True).execute()
+        
+        # Check if any data was returned INSTEAD of relying on .single() to fail
+        if not response.data:
+            raise Exception("No public record found for this handle.")
 
-        sharer_data = response.data
+        sharer_data = response.data[0] # Get the first record
 
+        # ... (rest of the logic: decrypt, call twikit, etc.) ...
         decrypted_auth_token = decrypt_token(sharer_data['auth_token_encrypted'])
         decrypted_ct0_token = decrypt_token(sharer_data['ct0_token_encrypted'])
 
-        tweets = asyncio.run(fetch_x_feed(decrypted_auth_token, decrypted_ct0_token, 'following'))
+        tweets = asyncio.run(fetch_x_feed(
+            decrypted_auth_token, decrypted_ct0_token, 'following'
+        ))
+        
         return jsonify(tweets)
 
     except Exception as e:
-        #This block handles multiple errors: record not found, decryption errors, Twikit errors
-        print(f"An error occurred in /get_following_feed: {e}")
+        print(f"AN EXCEPTION OCCURRED in /get_following_feed: {e}")
         return jsonify({'error': 'Feed not found or is not shared publicly.'}), 404
+
+
+
+
+
+
+    # try:
+    #     viewer_request_data = request.get_json()
+    #     target_x_handle = viewer_request_data.get('target_x_handle')
+
+    #     if not target_x_handle:
+    #         return jsonify({'error': 'target_x_handle is required'}), 400
+
+    #     response = supabase.table('shared_accounts').select(
+    #         'auth_token_encrypted, ct0_token_encrypted'
+    #     ).eq('owner_x_handle', target_x_handle).eq('is_public', True).single().execute()
+
+    #     sharer_data = response.data
+
+    #     decrypted_auth_token = decrypt_token(sharer_data['auth_token_encrypted'])
+    #     decrypted_ct0_token = decrypt_token(sharer_data['ct0_token_encrypted'])
+
+    #     tweets = asyncio.run(fetch_x_feed(decrypted_auth_token, decrypted_ct0_token, 'following'))
+    #     return jsonify(tweets)
+
+    # except Exception as e:
+    #     #This block handles multiple errors: record not found, decryption errors, Twikit errors
+    #     print(f"An error occurred in /get_following_feed: {e}")
+    #     return jsonify({'error': 'Feed not found or is not shared publicly.'}), 404
 
 if __name__== '__main__':
     app.run(debug=True, port=5000)

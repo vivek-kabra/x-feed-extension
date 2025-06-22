@@ -1,6 +1,7 @@
-const SUPABASE_URL = 'YOUR_SUPABASE_PROJECT_URL'; 
-const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY'; 
-const supabase = supabaseJs.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const SUPABASE_URL = 'https://attyqvxrfjsczgpygjwr.supabase.co'; 
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF0dHlxdnhyZmpzY3pncHlnandyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA1MzE1NjQsImV4cCI6MjA2NjEwNzU2NH0.MNuS8Z4oo4pHceMftahYLYpDSf1s7orUmHeHNXJnld8';
+// AFTER (Correctly uses the global object for initialization)
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 const BACKEND_URL = 'http://127.0.0.1:5000'; 
 
@@ -154,31 +155,47 @@ async function fetchSharingStatus() {
     }
 }
 
+
 async function extractXCookies() {
     try {
-        const getCookie = (name) => new Promise((resolve, reject) => {
-            chrome.cookies.get({ url: "https://x.com", name: name }, cookie => {
+        const allCookies = await new Promise((resolve, reject) => {
+            chrome.cookies.getAll({ domain: "x.com" }, cookies => {
                 if (chrome.runtime.lastError) {
                     reject(new Error(chrome.runtime.lastError.message));
                 } else {
-                    resolve(cookie);
+                    resolve(cookies);
                 }
             });
         });
 
-        const authTokenCookie = await getCookie("auth_token");
-        const ct0Cookie = await getCookie("ct0");
-
-        if (!authTokenCookie || !ct0Cookie) {
-            throw new Error("Could not retrieve X.com auth_token or ct0. Ensure you are logged into X.com in this browser.");
+        if (!allCookies) {
+            throw new Error("Failed to query cookies for x.com.");
         }
-        return { auth_token: authTokenCookie.value, ct0: ct0Cookie.value };
+        
+        const authTokenCookie = allCookies.find(c => c.name === "auth_token");
+        const ct0Cookie = allCookies.find(c => c.name === "ct0");
+
+        if (!authTokenCookie) {
+            throw new Error("Could not find the 'auth_token' cookie. Please ensure you are logged into X.com.");
+        }
+        if (!ct0Cookie) {
+            throw new Error("Could not find the 'ct0' cookie, even after fetching all cookies.");
+        }
+
+        console.log('ct0 extracted:', ct0Cookie.value);
+        return { 
+            auth_token: authTokenCookie.value, 
+            ct0: ct0Cookie.value
+        };
+
     } catch (error) {
-        console.error("Error extracting X cookies:", error);
+        console.error("Error during cookie extraction:", error);
         alert(`Error extracting X cookies: ${error.message}`);
-        return null;
+        return null; 
     }
 }
+
+
 
 async function saveShareSettings() {
     const shareErrorEl = document.getElementById('shareError');
@@ -216,7 +233,7 @@ async function saveShareSettings() {
             owner_x_handle: myXHandle.startsWith('@') ? myXHandle.substring(1) : myXHandle,
             owner_display_name: myDisplayName,
             auth_token: xCookies.auth_token,
-            ct0: xCookies.ct0
+            ct0_token: xCookies.ct0
         };
     } else {
         endpointUrl = `${BACKEND_URL}/unshare_feed`;
