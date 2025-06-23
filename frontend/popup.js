@@ -1,6 +1,6 @@
 const SUPABASE_URL = 'https://attyqvxrfjsczgpygjwr.supabase.co'; 
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF0dHlxdnhyZmpzY3pncHlnandyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA1MzE1NjQsImV4cCI6MjA2NjEwNzU2NH0.MNuS8Z4oo4pHceMftahYLYpDSf1s7orUmHeHNXJnld8';
-// AFTER (Correctly uses the global object for initialization)
+
 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 const BACKEND_URL = 'http://127.0.0.1:5000'; 
@@ -145,9 +145,16 @@ async function fetchSharingStatus() {
         const myXHandleInput = document.getElementById('myXHandleInput');
         const makePublicToggle = document.getElementById('makePublicToggle');
         const myDisplayNameInput = document.getElementById('myDisplayNameInput');
-
+        console.log("Sharing status data:", statusData);
         if (myXHandleInput) myXHandleInput.value = statusData.owner_x_handle || '';
-        if (makePublicToggle) makePublicToggle.checked = statusData.is_public || false;
+        if (makePublicToggle) {
+            if (typeof statusData.is_public==='boolean'){
+                makePublicToggle.checked = statusData.is_public;
+            }
+            else{
+                makePublicToggle.checked = true;
+            }
+        }
         if (myDisplayNameInput && statusData.display_name) myDisplayNameInput.value = statusData.display_name;
 
     } catch (error) {
@@ -428,6 +435,7 @@ async function handleViewFeedByHandle(event) {
 function saveViewedAccount(handle) {
     chrome.storage.local.get({ viewedAccounts: [] }, (data) => {
         let accounts = data.viewedAccounts;
+        handle=handle.startsWith('@') ? handle:'@'+handle;
 
         const isDuplicate = accounts.some(acc => acc.handle === handle);
         if (isDuplicate) {

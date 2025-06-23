@@ -180,7 +180,7 @@ def check_share_status_route():
             # User has never shared before
             return jsonify({'is_public': False, 'owner_x_handle': ''}), 200
         
-        return jsonify(data), 200
+        return jsonify(data[0]), 200
 
     except Exception as e:
         print(f"An error occurred in /check_share_status: {e}")
