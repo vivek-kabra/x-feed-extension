@@ -1,116 +1,292 @@
 body {
-    font-family: Arial, Helvetica, sans-serif;
-    width: 380px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    width: 420px; 
+    margin: 0;
+    background-color: #f0f2f5; 
+    color: #1c1e21; 
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.popup-container { 
     padding: 15px;
-    background-color: #f9f9f9;
-    color: #333; 
 }
 
 h1 {
     font-size: 20px;
     color: #1DA1F2;
     text-align: center;
-    margin-top: 0;
-    margin-bottom: 20px;
+    margin-top: 15px;
+    margin-bottom: 20px; 
 }
+
 h2 {
     font-size: 16px;
-    color: #333;
-    border-bottom: 1px solid #eee;
-    padding-bottom: 5px;
-    margin-top: 20px;
-    margin-bottom: 10px;
+    color: #0f1419; 
+    border-bottom: 1px solid #ebeef0; 
+    padding-bottom: 8px;
+    margin-top: 0; 
+    margin-bottom: 18px;
+}
+
+.section {
+    background-color: #ffffff;
+    padding: 18px 20px;
+    margin-bottom: 15px;
+    border-radius: 8px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06), 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+.section:last-child {
+    margin-bottom: 0;
+}
+
+hr {
+    border: none;
+    border-top: 1px solid #e7ecf0; 
+    margin: 25px 0;
 }
 
 label {
     display: block;
-    font-weight: bold;
-    margin-top: 10px;
-    margin-bottom: 5px;
+    font-weight: 600;
+    margin-top: 16px; 
+    margin-bottom: 8px;
     font-size: 14px;
+    color: #3c4043; 
 }
 
 input[type="text"],
-select#feedType {
-    width: calc(100% - 12px);
-    padding: 8px 10px; 
-    margin-bottom: 15px; 
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    font-size: 14px;
+input[type="email"],
+input[type="password"],
+select#feedType { 
+    width: 100%;
+    padding: 10px 12px;
+    margin-bottom: 16px; 
+    border: 1px solid #cfd9de; 
+    border-radius: 6px;
+    font-size: 15px; 
     box-sizing: border-box; 
+    background-color: #f7f9f9; 
+    color: #0f1419;
+}
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="password"]:focus,
+select#feedType:focus {
+    border-color: #1DA1F2;
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(29, 161, 242, 0.25);
+    background-color: #ffffff;
 }
 select#feedType {
-    background-color: white; 
+    appearance: none; 
+    background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20width%3D%2220%22%20height%3D%2220%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%3E%3Cpath%20d%3D%22M5%208l5%205%205-5z%22%20fill%3D%22%23555%22/%3E%3C/svg%3E'); 
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    padding-right: 30px; 
 }
+
 
 button {
-    padding: 8px 15px;
-    border: none;
-    border-radius: 4px;
+    width: 100%; 
+    padding: 10px 15px;
+    border: 1px solid transparent; 
+    border-radius: 9999px; 
     cursor: pointer;
-    font-size: 14px;
+    font-size: 15px;
     font-weight: bold;
-    transition: background-color 0.2s ease;
+    transition: background-color 0.2s ease, opacity 0.2s ease, border-color 0.2s ease;
+    text-align: center;
+    margin-top: 12px; 
+}
+button:hover {
+    opacity: 0.85;
+}
+button:active {
+    opacity: 1;
+    transform: scale(0.98);
 }
 
-#saveAccountButton {
+#loginButton, 
+#saveShareSettingsButton,
+#viewFeedButton {
     background-color: #1DA1F2; 
     color: white;
-    display: block; 
-    width: 35%; 
+}
+#loginButton:hover,
+#saveShareSettingsButton:hover,
+#viewFeedButton:hover {
+    background-color: #0c85d0; 
+    opacity: 1;
+}
+
+#googleLoginButton { 
+    background-color: #ffffff; 
+    color: #3c4043; 
+    border: 1px solid #dadce0; 
+    font-weight: 500; 
+    display: flex; 
+    align-items: center;
+    justify-content: center;
+    gap: 10px; 
+    width: auto;
+    padding: 8px 16px;
+    margin: 20px auto 10px auto; 
+}
+#googleLoginButton:hover {
+    background-color: #f8f9fa; 
+    border-color: #c6c9ce;
+    opacity: 1; 
+}
+.google-icon-svg-container {
+    display: inline-flex; 
+    align-items: center;
+    width: 18px;
+    height: 18px;
+}
+.google-icon-svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+#signUpButton { 
+    background-color: #ffffff;
+    color: #1DA1F2;
+    border: 1px solid #1DA1F2;
     margin-top: 10px;
 }
-#saveAccountButton:hover {
-    background-color: #0c85d0; 
+#signUpButton:hover {
+    background-color: rgba(29, 161, 242, 0.08);
+    opacity: 1;
 }
 
-.account-item button {
-    padding: 5px 10px;
-    font-size: 12px;
-    margin-left: 5px;
+#sharingSection p:first-of-type {
+    font-size: 13px;
+    color: #536471;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
-.view-button {
-    background-color: #28a745; 
-    color: white;
+#currentUserEmail {
+    font-weight: 600;
+    color: #0f1419;
 }
-.view-button:hover {
-    background-color: #218838;
+#logoutButton.small-button {
+    width: auto; 
+    padding: 6px 12px;
+    font-size: 13px;
+    font-weight: normal;
+    background-color: #eff3f4; 
+    color: #0f1419;
+    border-radius: 9999px;
+    margin-left: 10px;
+    margin-top: 0; 
+}
+#logoutButton.small-button:hover {
+    background-color: #e7e7e8;
+    opacity: 1;
 }
 
-.delete-button {
-    background-color: #dc3545; 
-    color: white;
+.toggle-container {
+    display: flex;
+    align-items: center;
+    margin-top: 15px;
+    margin-bottom: 20px;
+    padding: 10px;
+    background-color: #f7f9f9;
+    border-radius: 8px;
 }
-.delete-button:hover {
-    background-color: #c82333;
+input[type="checkbox"]#makePublicToggle {
+    margin-right: 10px;
+    width: 18px;
+    height: 18px;
+    accent-color: #1DA1F2;
+    cursor: pointer;
+}
+label.toggle-label {
+    font-weight: normal;
+    font-size: 14px;
+    margin: 0;
+    cursor: pointer;
+    flex-grow: 1;
+    color: #0f1419;
+}
+
+#loadingIndicator i {
+    color: #536471;
+    font-size: 13px;
+}
+
+.error-message,
+.success-message {
+    font-size: 13px;
+    margin-top: 12px;
+    padding: 10px 12px;
+    border-radius: 6px;
+    line-height: 1.4;
+}
+.error-message {
+    color: #d93025; 
+    background-color: #fdecea; 
+    border: 1px solid #f5c6cb;
+}
+.success-message {
+    color: #187038; 
+    background-color: #e6f4ea; 
+    border: 1px solid #c3e6cb;
 }
 
 #account-list {
-    margin-top: 15px;
-    border-top: 1px solid #eee;
-    padding-top: 10px;
+    margin-top: 0;
+    padding-top: 0;
 }
-
 .accounts-ul {
     list-style-type: none;
     padding: 0;
     margin: 0;
 }
-
 .account-item {
-    padding: 10px 5px;
-    border-bottom: 1px solid #eee;
+    padding: 12px 0px;
+    border-bottom: 1px solid #eff3f4;
     display: flex;
     justify-content: space-between;
     align-items: center;
 }
-
 .account-item:last-child {
     border-bottom: none;
 }
-
 .account-name {
     flex-grow: 1;
-    font-size: 14px;
+    font-size: 15px; 
+    color: #0f1419;
+    padding-right: 10px;
+}
+
+.account-item button {
+    padding: 5px 10px;
+    font-size: 12px;
+    margin-left: 8px;
+    width: auto; 
+    margin-top: 0;
+    border-radius: 9999px;
+}
+.account-item .view-button { 
+    background-color: #17a2b8; 
+    color: white;
+    border-color: transparent;
+}
+.account-item .view-button:hover {
+    background-color: #138496;
+    opacity: 1;
+}
+.account-item .delete-button { 
+    background-color: #ffffff; 
+    color: #d93025;
+    border: 1px solid #f5c6cb;
+}
+.account-item .delete-button:hover {
+    background-color: #fdecea;
+    opacity: 1;
 }
