@@ -79,7 +79,7 @@ async function handleSignUp() {
         }
     } else {
         console.log("Sign up successful, user:", data.user);
-        alert("Sign up successful! Please check your email to confirm (if email confirmation is enabled in Supabase). You can now attempt to log in.");
+        alert("Sign up successful! Please check your email to confirm your account.");
         // Clear form
         document.getElementById('emailInput').value = '';
         document.getElementById('passwordInput').value = '';
