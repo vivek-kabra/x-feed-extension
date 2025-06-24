@@ -76,7 +76,7 @@ function renderCustomFeed(tweets, feedType) {
     
     console.log("X Feed Simulator: Found timeline element:", timelineElement);
 
-    // Hide the native "For you"/"Following" tabs
+    //Hide the native "For you"/"Following" tabs
     const topTabsContainer = document.querySelector('[role="tablist"]');
     if (topTabsContainer) {
         topTabsContainer.style.display = 'none';
