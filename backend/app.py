@@ -80,7 +80,10 @@ async def fetch_x_feed(auth_token, ct0_token, feed_type):
             'view_count': tweet.view_count if hasattr(tweet, 'view_count') and tweet.view_count is not None else 0
         })
     return formatted_tweets
-
+@app.route('/', methods=['GET', 'HEAD'])
+def index():
+    #Endpoint to check if the backend server is running
+    return "Backend server is alive and running", 200
 
 @app.route('/share_feed', methods=['POST'])
 def share_feed_route():

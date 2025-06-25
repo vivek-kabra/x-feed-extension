@@ -3,7 +3,7 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 
 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-const BACKEND_URL = 'http://127.0.0.1:5000'; 
+const BACKEND_URL = 'https://x-feed-simulator-backend.onrender.com'; 
 
 
 document.addEventListener('DOMContentLoaded', async function() {
